@@ -1,0 +1,58 @@
+[build-system]
+requires = ["setuptools>=75,<81"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rapp-coop"
+version = "1.0.0"
+description = "Several twins, one world, no collisions: shared chat and expiring claims for concurrent human/AI work"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{ name = "Kody W" }]
+keywords = ["rapp", "openrappter", "agents", "coordination", "multi-agent"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3,<9",
+  "ruff>=0.9,<1",
+]
+
+[project.scripts]
+rapp-coop = "rapp_coop.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/kody-w/rapp-coop"
+Issues = "https://github.com/kody-w/rapp-coop/issues"
+Source = "https://github.com/kody-w/rapp-coop"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+extend-exclude = [".venv"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "B", "S"]
+ignore = ["S101", "S104", "S110", "S311", "S603", "S607"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S"]
