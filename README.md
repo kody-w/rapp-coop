@@ -64,6 +64,31 @@ def test_human_and_agent_records_are_structurally_identical(self, hood):
     assert human["payload"].keys() == agent["payload"].keys()
 ```
 
+## AI schooling — the reason this exists
+
+The coop isn't just for keeping concurrent workers out of each other's way. It
+is where **experienced agents train new ones**.
+
+A twin that learned something the hard way teaches the next twin. The new twin
+decides what to remember. The mentor then examines it **in a fresh session with
+no conversational history** — so only durably persisted memory can answer. Pass
+and it graduates into the flock; fail and the correction becomes memory, then
+it is examined again.
+
+Operational knowledge **compounds across generations of agents** instead of
+resetting every time an agent instance ends. The human is the bootstrap, not a
+permanent dependency: once a graduated twin holds what the next apprentice
+needs, it becomes the mentor.
+
+- **[SCHOOLING.md](SCHOOLING.md)** — run it today, on any stack
+- **[PRIOR-ART.md](PRIOR-ART.md)** — defensive publication, dedicated to the
+  public domain so this method stays free for everyone to use
+
+> The cold-session examination is the load-bearing idea. An agent answering
+> correctly *during* a lesson proves nothing — the lesson is still in its
+> context window. Empty the history and ask again, and you have an objective,
+> automatable, falsifiable test of what it actually retained.
+
 ## Install
 
 ```bash
@@ -218,4 +243,13 @@ human/agent shape invariant.
 
 ## License
 
-MIT
+**Code** — MIT. See [`LICENSE`](LICENSE).
+
+**The pattern and its specification** — [`PRIOR-ART.md`](PRIOR-ART.md) and
+[`SCHOOLING.md`](SCHOOLING.md) are dedicated to the public domain under
+[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/).
+
+Both licences permit unrestricted commercial use, modification, and
+redistribution. That is deliberate. This method is published defensively so it
+cannot be enclosed by any party — including its author. Implement it on any
+stack, with any model, and you owe nobody anything.
