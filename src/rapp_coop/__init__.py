@@ -14,9 +14,11 @@ from .coop import (
     ResourceBusy,
     Twin,
 )
+from .recorder import SCHEMA_VERSION, Event, Recording, load, redact
+from .replay import perspective, perspectives, play, summarize, transcript
 from .server import DEFAULT_PORT, RemoteNeighborhood, serve
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
 __all__ = [
     "CLAIM_TTL",
@@ -24,10 +26,20 @@ __all__ = [
     "DEFAULT_PORT",
     "PRESENCE_TTL",
     "RESOURCES",
+    "SCHEMA_VERSION",
     "Claim",
+    "Event",
     "Neighborhood",
+    "Recording",
     "RemoteNeighborhood",
     "ResourceBusy",
     "Twin",
+    "load",
+    "perspective",
+    "perspectives",
+    "play",
+    "redact",
     "serve",
+    "summarize",
+    "transcript",
 ]

@@ -78,11 +78,63 @@ def build_parser() -> argparse.ArgumentParser:
 
     sub.add_parser("claims", help="List active leases")
     sub.add_parser("resources", help="List the resources worth claiming")
+
+    replay = sub.add_parser(
+        "replay", help="Replay a recorded learning lifecycle"
+    )
+    replay.add_argument("recording", help="Path to a .jsonl recording")
+    replay.add_argument(
+        "--as",
+        dest="view",
+        default="observer",
+        help="Perspective: observer, memory, exam, or a participant id",
+    )
+    replay.add_argument(
+        "--speed",
+        type=float,
+        default=0.0,
+        help="0 = instant (default), 1.0 = real time, 2.0 = twice as fast",
+    )
+    replay.add_argument("--max-gap", type=float, default=3.0)
+    replay.add_argument(
+        "--transcript", action="store_true", help="Full untruncated text"
+    )
+    replay.add_argument("--summary", action="store_true", help="Stats only")
+    replay.add_argument(
+        "--views", action="store_true", help="List available perspectives"
+    )
     return parser
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+
+    # Replay reads a file and touches no neighborhood state.
+    if args.action == "replay":
+        from .recorder import load
+        from .replay import perspectives, play, summarize, transcript
+
+        events = load(args.recording)
+        if not events:
+            print(f"no events in {args.recording}")
+            return 1
+        if args.views:
+            for view in perspectives(events):
+                print(f"  {view}")
+            return 0
+        if args.summary:
+            print(summarize(events).render())
+            return 0
+        if args.transcript:
+            print(transcript(events, args.view))
+            return 0
+        shown = play(
+            events, view=args.view, speed=args.speed, max_gap=args.max_gap
+        )
+        if not shown:
+            print(f"(no events visible from perspective {args.view!r})")
+        return 0
+
     hood = _neighborhood(args)
     me = _twin_id(args)
 

@@ -81,6 +81,8 @@ permanent dependency: once a graduated twin holds what the next apprentice
 needs, it becomes the mentor.
 
 - **[SCHOOLING.md](SCHOOLING.md)** — run it today, on any stack
+- **[TELEMETRY.md](TELEMETRY.md)** — record the whole lifecycle and replay it
+  from any perspective, at full fidelity
 - **[PRIOR-ART.md](PRIOR-ART.md)** — defensive publication, dedicated to the
   public domain so this method stays free for everyone to use
 
@@ -245,8 +247,9 @@ human/agent shape invariant.
 
 **Code** — MIT. See [`LICENSE`](LICENSE).
 
-**The pattern and its specification** — [`PRIOR-ART.md`](PRIOR-ART.md) and
-[`SCHOOLING.md`](SCHOOLING.md) are dedicated to the public domain under
+**The pattern and its specification** — [`PRIOR-ART.md`](PRIOR-ART.md),
+[`SCHOOLING.md`](SCHOOLING.md), and [`TELEMETRY.md`](TELEMETRY.md) are
+dedicated to the public domain under
 [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/).
 
 Both licences permit unrestricted commercial use, modification, and

@@ -4,6 +4,7 @@ The following files are dedicated to the public domain:
 
 - `PRIOR-ART.md`
 - `SCHOOLING.md`
+- `TELEMETRY.md`
 
 ## Dedication
 

@@ -197,8 +197,69 @@ memory deliberately. Don't hand it out as a real tenant identifier.
 
 ---
 
-## Cross-platform
+## Telemetry and replay
 
+### Record the events, not a summary
+
+A summary answers the question you thought to ask while recording. The event
+log answers questions you think of later. Record `actor`, `subject`, and
+ordering, and any perspective can be reconstructed afterwards — including ones
+nobody has considered yet.
+
+### One log, projections for viewpoints
+
+Never write a per-participant recording. The moment you record from a viewpoint
+you have decided whose story matters, and you have decided it at the worst
+possible time — before anything interesting has happened.
+
+### Version every event and preserve unknown fields
+
+Readers must ignore unknown event types and keep unknown keys rather than
+dropping them. This is what makes fidelity *additive*: you can capture token
+counts, latencies, prompts, or frames next month without invalidating a single
+recording made today. Test it, or it will quietly stop being true.
+
+### Pace replays on monotonic offsets
+
+Wall clocks jump; they are for humans reading transcripts, not for playback.
+Capture a monotonic offset at record time. The pause while a model was thinking
+is data — often the most informative part of the run — and only a monotonic
+clock reproduces it faithfully.
+
+### Redact at write time, never after
+
+A recording exists to be shared, so it must never be the thing that leaks a
+credential. Strip secrets before serialising the line: a secret removed later
+has still been written to disk, and probably to a backup.
+
+Watch the word boundary. A pattern like `\bpassword\s*=` will not match
+`AdminPassword=`, `api_token=`, or `CLIENT_SECRET=` — which are precisely the
+forms that leak. Drop the `\b`.
+
+### Capture what the agent did, not what it said
+
+An agent will write *"I've saved that insight"* whether or not it called the
+tool. That sentence is not evidence; the tool-call record is. Derive
+`memory.write` events from the runtime's tool log, and if you can, reconcile
+against the store itself.
+
+### A field that is sometimes a string and sometimes a list will bite you
+
+Some runtimes return an agent-log field as a newline-joined **string**, others
+as a **list**. Iterating the string form in Python yields *individual
+characters*, so every parse fails — silently, with zero matches and no error.
+
+We shipped exactly this bug: the first live recording reported `memories kept:
+0` while the memory store had grown from 23 to 25 entries. Normalise
+string-or-list fields at the boundary, and **cross-check a count against ground
+truth** rather than trusting a clean-looking zero.
+
+
+
+
+---
+
+## Cross-platform
 
 ### `O_CREAT | O_EXCL` raises `PermissionError` on Windows
 
@@ -219,6 +280,18 @@ Found by a concurrency test, not by review. Write the contended test.
 A process that dies holding a lock file leaves it behind forever. Treat a lock
 whose mtime exceeds the timeout as abandoned and take it — same reasoning as
 leases, one level down.
+
+### `Set-Content -Encoding utf8` writes a BOM on Windows PowerShell 5.1
+
+Rewriting a config file from PowerShell with `-Encoding utf8` prepends a
+byte-order mark. Parsers that are strict about the first byte — TOML readers
+among them — then fail with a baffling *"Invalid statement at line 1, column
+1"*, on a file that looks perfect in every editor.
+
+We hit this bumping a version string in `pyproject.toml`. Use
+`[System.IO.File]::WriteAllText($path, $text, (New-Object System.Text.UTF8Encoding($false)))`,
+or PowerShell 7's `-Encoding utf8NoBOM`. When a file parses as broken but reads
+as fine, check the first three bytes for `EF BB BF`.
 
 ### `gh auth token` is not a Copilot token
 

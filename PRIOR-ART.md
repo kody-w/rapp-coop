@@ -101,6 +101,10 @@ and a method comprising:
    during operation, thereby becoming eligible to act as mentor in step 2 for a
    subsequent agent — so that operational knowledge compounds across
    generations of agents rather than resetting.
+7. **Recording**: capturing the foregoing as an ordered append-only event
+   sequence bearing actor, subject, monotonic offset, and schema version, from
+   which any viewpoint may afterwards be obtained by projection, and which
+   remains readable as recorded detail increases over time.
 
 ## Detailed description
 
@@ -213,6 +217,25 @@ of any proprietary right.**
     default such that a newly instantiated agent inherits the accumulated
     knowledge of prior agents, and optionally partitioned by a globally unique
     tenant identifier where isolation between tenants is required.
+13. A method of recording the training lifecycle of aspect 1 as an ordered
+    append-only sequence of events, each event bearing an actor identifier, a
+    subject identifier, a monotonic time offset, and a schema version, such
+    that the lifecycle may afterwards be reproduced.
+14. The method of aspect 13, wherein a viewpoint of the recorded lifecycle is
+    obtained by projection over the single recorded sequence rather than by
+    recording separately per viewpoint, such that viewpoints not contemplated
+    at recording time may be derived subsequently.
+15. The method of aspect 13, wherein a reader disregards event types it does
+    not recognise and preserves record fields it does not recognise, such that
+    later increases in recorded detail do not invalidate previously made
+    recordings.
+16. The method of aspect 13, wherein reproduction is paced by the recorded
+    monotonic offsets, thereby preserving the original temporal structure of
+    the session including intervals during which an agent was deliberating.
+17. The method of aspect 13, wherein an event denoting an item committed to
+    durable memory is derived from the agent runtime's record of tool
+    invocation rather than from the agent's own natural-language assertion that
+    it has done so.
 
 ## Alternative embodiments
 
