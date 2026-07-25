@@ -138,7 +138,67 @@ a fix you hope landed.
 
 ---
 
+## Memory and multi-tenancy
+
+### Global memory is the correct default
+
+A twin's memories live in one shared store unless you say otherwise. That is
+the right default for a single operator running a flock on their own hardware:
+every twin you hatch inherits the accumulated operational knowledge instead of
+relearning it. Shared memory is a feature, not a leak.
+
+Don't reach for per-user scoping because it feels tidier. Reach for it when you
+have actual tenants.
+
+### `guid` is for tenant isolation, not for tidiness
+
+Scoping exists for a **globally deployed brainstem serving many tenants** —
+where every user carries a stable directory identity (an M365 account ID, for
+example). Passing that ID as the memory `guid` gives each user a private store:
+
+```
+shared_memories/memory.json      # the default: one flock, one brain
+memory/<guid>/user_memory.json   # one tenant, isolated
+```
+
+Because the identifier is a strict GUID, overlap between two tenants is not
+merely unlikely — it is structurally impossible. That property is the whole
+reason to use a GUID rather than a username, an email, or a slug.
+
+The strict format is doing double duty: it also guarantees a **single safe path
+component**, so a traversal attempt like `a/../b` cannot escape into another
+tenant's directory.
+
+### A malformed tenant ID fails *open*, and does it silently
+
+This is the sharp edge. Setting the memory context with anything that is not a
+strict GUID does not raise — it **falls back to the shared store and returns
+`False`**:
+
+```python
+ok = storage.set_memory_context(tenant_id)
+if not ok:
+    # tenant_id was malformed; you are now writing to GLOBAL memory
+    raise RuntimeError(f"refusing to serve tenant with unusable id")
+```
+
+Never raising is the right call for a single-operator box, where a bad id
+should degrade to shared rather than crash the twin. But in a multi-tenant
+deployment the same behaviour writes one customer's memories into the store
+every other customer reads.
+
+**Check the boolean.** The failure is silent by design, so the caller is the
+only thing standing between a typo'd tenant id and a cross-tenant leak.
+
+### There is a reserved marker GUID
+
+A specific well-known GUID is treated as "no tenant" and routes to shared
+memory deliberately. Don't hand it out as a real tenant identifier.
+
+---
+
 ## Cross-platform
+
 
 ### `O_CREAT | O_EXCL` raises `PermissionError` on Windows
 
