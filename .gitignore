@@ -10,3 +10,5 @@ dist/
 .coverage
 htmlcov/
 .rapp-coop/
+recordings/
+*.jsonl

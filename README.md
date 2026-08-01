@@ -82,9 +82,17 @@ needs, it becomes the mentor.
 
 - **[SCHOOLING.md](SCHOOLING.md)** — run it today, on any stack
 - **[TELEMETRY.md](TELEMETRY.md)** — record the whole lifecycle and replay it
-  from any perspective, at full fidelity
+  from any perspective, in a browser or on the CLI
 - **[PRIOR-ART.md](PRIOR-ART.md)** — defensive publication, dedicated to the
   public domain so this method stays free for everyone to use
+
+Try the player in under a minute, no credentials required:
+
+```bash
+python examples/make_sample_recording.py
+rapp-coop serve --recordings recordings
+# open http://127.0.0.1:8770/replay
+```
 
 > The cold-session examination is the load-bearing idea. An agent answering
 > correctly *during* a lesson proves nothing — the lesson is still in its

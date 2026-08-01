@@ -76,6 +76,40 @@ rapp-coop replay run.jsonl               # instant (default)
 
 Long gaps are capped by `--max-gap` so one slow call cannot stall a replay.
 
+## Watch it in a browser
+
+The CLI replay is for developers. The player is for everyone else:
+
+```bash
+python examples/make_sample_recording.py     # no credentials needed
+rapp-coop serve --recordings recordings
+# open http://127.0.0.1:8770/replay
+```
+
+Pick a recording, pick a perspective, press play. Space toggles play/pause,
+arrow keys step one event at a time, and the scrubber seeks anywhere in the
+run. Selecting an event shows its **complete, untruncated** payload — including
+keys the player has never heard of.
+
+The player is deliberately a *projection client*. The server hands it the raw
+event log and all perspective filtering happens in the browser. Two
+consequences, both intentional:
+
+- switching perspective is instant and never re-reads the file;
+- **the server never has to know what perspectives exist**, so a viewpoint
+  invented later is a change to one file, not a protocol change.
+
+| Route | Purpose |
+|---|---|
+| `GET /replay` | The player page |
+| `GET /recordings` | Available recordings, newest first |
+| `GET /recording?name=<file>` | One recording's events as JSON |
+
+A recording name arrives from the network, so it is treated as hostile: only a
+bare `*.jsonl` filename is accepted. Anything containing a separator or a
+parent reference is **refused rather than resolved**, so a crafted name cannot
+escape the recordings directory.
+
 ## The event envelope
 
 A superset of the coop chat record — a chat message and a telemetry event are

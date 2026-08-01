@@ -50,6 +50,10 @@ def build_parser() -> argparse.ArgumentParser:
     serve_cmd = sub.add_parser("serve", help="Host /chat for every twin")
     serve_cmd.add_argument("--bind", default="127.0.0.1")
     serve_cmd.add_argument("--port", type=int, default=8770)
+    serve_cmd.add_argument(
+        "--recordings",
+        help="Directory of .jsonl recordings to serve at /replay",
+    )
 
     chat = sub.add_parser("chat", help="Say something to the neighborhood")
     chat.add_argument("text", nargs="+")
@@ -141,9 +145,18 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.action == "serve":
         from .server import serve
 
-        httpd = serve(hood, host=args.bind, port=args.port, token=args.token or "")
+        recordings = getattr(args, "recordings", None) or ""
+        httpd = serve(
+            hood,
+            host=args.bind,
+            port=args.port,
+            token=args.token or "",
+            recordings=recordings,
+        )
         print(f"rapp-coop on http://{args.bind}:{httpd.server_address[1]}")
         print("  one /chat for humans (browser) and twins (POST JSON)")
+        if recordings:
+            print(f"  /replay  player over {recordings}")
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:

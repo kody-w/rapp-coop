@@ -45,7 +45,9 @@ PAGE = """<!doctype html>
  input{flex:1;background:#0d1117;color:#e6edf3}
  button{background:#238636;color:#fff;border:0;cursor:pointer}
 </style>
-<header>rapp-coop &mdash; one /chat for humans and twins</header>
+<header>rapp-coop &mdash; one /chat for humans and twins
+  &nbsp;<a href="/replay" style="color:#58a6ff;font-weight:400">watch a replay &rarr;</a>
+</header>
 <div id="twins">&nbsp;</div>
 <div id="log"></div>
 <form id="f">
@@ -103,6 +105,7 @@ class _Handler(BaseHTTPRequestHandler):
     server_version = "rapp-coop/1.0"
     neighborhood: Neighborhood
     token: str = ""
+    recordings: str = ""
 
     def log_message(self, fmt: str, *args: Any) -> None:  # noqa: A003
         return
@@ -175,6 +178,26 @@ class _Handler(BaseHTTPRequestHandler):
             self._json(200, {"claims": [c.__dict__ for c in claims]})
         elif route == "/health":
             self._json(200, {"status": "ok"})
+        elif route == "/replay":
+            from .player import PLAYER_HTML
+
+            self._send(200, PLAYER_HTML.encode("utf-8"),
+                       "text/html; charset=utf-8")
+        elif route == "/recordings":
+            from .player import list_recordings
+
+            found = list_recordings(self.recordings) if self.recordings else []
+            self._json(200, {"recordings": found, "dir": self.recordings})
+        elif route == "/recording":
+            from .player import read_recording
+
+            name = query.get("name", [""])[0]
+            try:
+                events = read_recording(self.recordings, name)
+            except (ValueError, FileNotFoundError, OSError) as error:
+                self._json(404, {"error": str(error)})
+                return
+            self._json(200, {"name": name, "events": events})
         else:
             self._json(404, {"error": "not found"})
 
@@ -240,6 +263,7 @@ def serve(
     host: str = "127.0.0.1",
     port: int = DEFAULT_PORT,
     token: str = "",
+    recordings: str = "",
 ) -> ThreadingHTTPServer:
     """Start the coop server. Caller owns the returned instance."""
     handler = type(
@@ -248,6 +272,7 @@ def serve(
         {
             "neighborhood": neighborhood,
             "token": token or os.environ.get("COOP_TOKEN", ""),
+            "recordings": recordings or os.environ.get("COOP_RECORDINGS", ""),
         },
     )
     return ThreadingHTTPServer((host, port), handler)
