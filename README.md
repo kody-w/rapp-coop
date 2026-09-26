@@ -1,5 +1,9 @@
 # rapp-coop
 
+<!-- rapp1:network-header:start -->
+[![RAPP/1](https://kody-w.github.io/rapp-hive-public/portfolio/badges/rapp-coop.svg)](https://github.com/kody-w/rapp-hive-public/blob/main/portfolio/repos/rapp-coop.md) · **New to RAPP?** [Start here: get your Brainstem →](https://github.com/kody-w/rapp-installer#start-here)
+<!-- rapp1:network-header:end -->
+
 **Several twins, one world, no collisions.**
 
 A *twin* is any participant working a shared system — a person, or an autonomous
